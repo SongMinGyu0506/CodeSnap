@@ -24,3 +24,16 @@ CodeSnap은 다음과 같은 문제들을 해결하고자 합니다:
 ---
 > CodeSnap은 함수/메소드 단위의 코드를 저장하고, 자동 버전 관리 및 코드 리뷰, 빌드, 외부 임포트까지 가능한 개발자 중심의 협업 지향 코드 저장소 플랫폼입니다.
 이는 개인 개발자부터 소규모 팀까지 모두 활용할 수 있도록 설계되었습니다.
+---
+## 🛠️ Tech Stack
+
+### Backend
+- **Spring Boot 3.4.6**
+- **MyBatis** - ORM 대신 SQL 중심 매핑 사용
+- **Spring Security + JWT** - 사용자 인증 및 권한 제어
+- **H2** (개발용 In-Memory DB), **MariaDB** (운영용)
+
+### Frontend
+- **Vue.js 3**
+- **Vite** - 빠른 개발 빌드 도구
+- (예정) **Monaco Editor** - 코드 작성용 에디터 (VSCode 기반)
