@@ -37,3 +37,6 @@ CodeSnap은 다음과 같은 문제들을 해결하고자 합니다:
 - **Vue.js 3**
 - **Vite** - 빠른 개발 빌드 도구
 - (예정) **Monaco Editor** - 코드 작성용 에디터 (VSCode 기반)
+
+### Docs
+- 문서는 (root)/docs에 위치
