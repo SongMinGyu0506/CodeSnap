@@ -119,7 +119,7 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
         RequestMatcher resource = new AntPathRequestMatcher(url,resourceMethod);
         resourcesMap.computeIfAbsent(resource,key -> new LinkedList<>()).add(new SecurityConfig(rawResource.get("AUTH")));
     }
-    
+
     /**
      * URL 권한 예외처리 함수
      * @return Spring Security 형식에 맞는 URL,ROLE
@@ -128,21 +128,26 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getPrefixRolesAndUrl() {
         LinkedHashMap<RequestMatcher,List<ConfigAttribute>> resourcesMap = new LinkedHashMap<>();
         if("prod".equalsIgnoreCase(sysprofile)) {
-            resourcesMap.put(new AntPathRequestMatcher("/api/_dev/**"),Arrays.asList(new SecurityConfig("ROLE_ADMN")));
+            asAntPathRequestMatcher("/api/_dev/**","ROLE_ADMN",resourcesMap);
         } else {
-            resourcesMap.put(new AntPathRequestMatcher("/api/_dev/**"),Arrays.asList(new SecurityConfig("ROLE_NONE")));
+            asAntPathRequestMatcher("/api/_dev/**","ROLE_NONE",resourcesMap);
         }
 
-        //권한 prefix 추가 시 resourcesMap.put(new AntPathRequestMatcher(urlString,Arrays.asList(new SecurityConfig(roleStr))) 형식 유지할 것
+                                            //권한 prefix 추가 시 asAntPathRequestMatcher(url,role,resourcesMap) 형식 유지할 것
                                             /*****************************************************
                                              *       ROLE_NONE   :   항상 접근 가능                  *
                                              *       ROLE_LGIN   :   로그인 사용자는 접근 가능        *
                                              *       ROLE_BLCK   :   접근 불가                       *
                                              *       이외 권한은 roles 테이블 참고                    *
                                              ****************************************************/
-        resourcesMap.put(new AntPathRequestMatcher("/**"),Arrays.asList(new SecurityConfig("ROLE_NONE"))); //개발용 권한 전체 허용
+
+        asAntPathRequestMatcher("/**","ROLE_NONE",resourcesMap);
         
         return resourcesMap;
+    }
+
+    private void asAntPathRequestMatcher(String pattern, String role, LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap) {
+        resourcesMap.put(new AntPathRequestMatcher(pattern),Arrays.asList(new SecurityConfig(role)));
     }
 
     /*
@@ -166,13 +171,14 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
      */
     private void synchronizedDatabaseUpdateTimeCheck(Date targetTime) {
         synchronized (this.lastChecked) {
-            if(targetTime == null || this.lastChecked.before(targetTime)) {
-                Date dbLastUpdated = null; //[TODO] 송민규 : 데이터베이스에서 조회 필요
-                if(dbLastUpdated != null && this.lastUpdated.before(dbLastUpdated)) {
-                    this.load();
-                } else {
-                    this.lastChecked = Calendar.getInstance().getTime();
-                }
+            boolean shoudCheck = (targetTime == null || lastChecked == null || lastChecked.before(targetTime));
+            if(!shoudCheck) return;
+
+            Date dbLastUpdated = null; //[TODO] 송민규 : 데이터베이스에서 조회 필요
+            if(dbLastUpdated != null && (lastUpdated == null || lastUpdated.before(dbLastUpdated))) {
+                this.load();
+            } else {
+                this.lastChecked = Calendar.getInstance().getTime();
             }
         }
     }
