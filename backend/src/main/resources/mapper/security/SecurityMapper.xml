@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bi_side.CodeSnap.config.security.mapper.SecurityMapper">
+    <select id="getUserInfo" parameterType="string" resultType="userDetails">
+        SELECT
+            user_id as username,
+            pwd as password
+        FROM
+            users u
+        WHERE 1=1
+            AND user_id = #{username}
+    </select>
+
+    <select id="loadRoles" resultType="map">
+        SELECT
+            m.url           AS RES,
+            mr.role_id      AS AUTH,
+            CASE
+                WHEN m.use_yn = 'Y' THEN 'Y'
+                ELSE 'N'
+                END
+            AS READABLE,
+            CASE
+                WHEN m.use_yn = 'Y' THEN 'Y'
+                ELSE 'N'
+                END
+            AS WRITABLE
+        FROM
+            menu m
+        JOIN
+            menu_roles mr ON m.menu_id = mr.menu_id
+        WHERE 1=1
+            AND m.url IS NOT NULL
+            AND m.use_yn = 'Y'
+        ORDER BY
+            m.parent_id NULLS FIRST,
+            m.sort_order ASC,
+            m.menu_id ASC
+    </select>
+    <select id="getRolesLastUpdate" resultType="java.util.Date">
+        SELECT MAX(updated_at)
+        FROM menu
+    </select>
+</mapper>
