@@ -1,8 +1,10 @@
 package com.bi_side.CodeSnap.config.security;
 
+import com.bi_side.CodeSnap.config.security.mapper.SecurityMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
@@ -15,6 +17,7 @@ import java.util.*;
 
 @Slf4j
 @Component("reloadableFilterInvocationSecurityMetadataSource")
+@Deprecated //Spring Security 6.0 버전 미사용 DynamicAuthorizationManager로 이전
 public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements FilterInvocationSecurityMetadataSource {
 
     private Map<RequestMatcher,Collection<ConfigAttribute>> requestMap = null;
@@ -23,7 +26,10 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
     private Date lastChecked = null;
     private static final int RELOAD_CHECK_SECONDS_THRESHOLD = 10;
 
-    private String sysprofile;
+    //private String sysprofile;
+
+    @Autowired
+    private SecurityMapper securityMapper;
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
@@ -91,7 +97,7 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
      * 연관 메소드: this.getRolesAndUrl()
      */
     private void DatabaseProcessingResourcesMap(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap) {
-        List<Map<String,String>> rawResourcesMap = null; //TODO: 송민규 mapper.loadRoles() 구현 필요
+        List<Map<String,String>> rawResourcesMap = securityMapper.loadRoles(); //TODO: 송민규 테스트 필요
         for(Map<String,String> rawResource : rawResourcesMap) {
             String resourceStr = Optional.ofNullable(rawResource.get("RES")).map(s -> s.endsWith("/") ? s.substring(0, s.length() - 1) : s).orElse(null);
             Boolean resourceReadable = "Y".equals(rawResource.get("READABLE"));
@@ -127,12 +133,6 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
      */
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getPrefixRolesAndUrl() {
         LinkedHashMap<RequestMatcher,List<ConfigAttribute>> resourcesMap = new LinkedHashMap<>();
-        if("prod".equalsIgnoreCase(sysprofile)) {
-            asAntPathRequestMatcher("/api/_dev/**","ROLE_ADMN",resourcesMap);
-        } else {
-            asAntPathRequestMatcher("/api/_dev/**","ROLE_NONE",resourcesMap);
-        }
-
                                             //권한 prefix 추가 시 asAntPathRequestMatcher(url,role,resourcesMap) 형식 유지할 것
                                             /*****************************************************
                                              *       ROLE_NONE   :   항상 접근 가능                  *
@@ -174,7 +174,7 @@ public class ReloadableFilterInvocationSecurityMetadataSourceImpl implements Fil
             boolean shoudCheck = (targetTime == null || lastChecked == null || lastChecked.before(targetTime));
             if(!shoudCheck) return;
 
-            Date dbLastUpdated = null; //[TODO] 송민규 : 데이터베이스에서 조회 필요
+            Date dbLastUpdated = securityMapper.getRolesLastUpdate(); //[TODO] 송민규 : 테스트 필요
             if(dbLastUpdated != null && (lastUpdated == null || lastUpdated.before(dbLastUpdated))) {
                 this.load();
             } else {
