@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
  * 테스트용 UserDetailsService<br/>
  * 실제 개발 할 때는 loadUserByUsername에 사용자 정보를 DB에 가져오는 작업 필요
  */
-@Service
+//@Service
+@Deprecated //테스트용 UserDetailsService
 public class FakeUserDetailsService implements UserDetailsService {
 
     @Override

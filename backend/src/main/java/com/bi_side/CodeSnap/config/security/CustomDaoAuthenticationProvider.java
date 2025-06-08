@@ -29,7 +29,7 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
         //가장 기본적인 로그인 방법(ID,Password 매칭 확인)
         String username = userDetails.getUsername();
         String rawPassword = authentication.getCredentials().toString();
-        String encodedPassword = new BCryptPasswordEncoder().encode("1234");
+        String encodedPassword = new BCryptPasswordEncoder().encode(rawPassword);
         if(!getPasswordEncoder().matches(rawPassword, encodedPassword)) {
             throw new BadCredentialsException("비밀번호가 틀렸습니다.");
         }
