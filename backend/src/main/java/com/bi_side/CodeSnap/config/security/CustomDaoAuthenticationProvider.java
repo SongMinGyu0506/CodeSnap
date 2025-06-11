@@ -52,8 +52,8 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
     private HttpServletRequest getCurrentHttpRequest() {
         RequestAttributes requestAttribute = RequestContextHolder.getRequestAttributes();
-        if(requestAttribute instanceof ServletRequestAttributes) {
-            return ((ServletRequestAttributes) requestAttribute).getRequest();
+        if(requestAttribute instanceof ServletRequestAttributes requestAttributes) {
+            return requestAttributes.getRequest();
         }
         throw new IllegalStateException("현재 요청이 존재하지 않음");
     }

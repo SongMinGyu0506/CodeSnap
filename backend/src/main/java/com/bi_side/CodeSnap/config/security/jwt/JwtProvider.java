@@ -3,6 +3,7 @@ package com.bi_side.CodeSnap.config.security.jwt;
 import java.util.Date;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +19,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
-    private final long VAILD_MILISECOND = 1000L * 60 * 60; //1시간
-    private String SECRET_KEY = "bumil_jwt_test"; //TODO: 추후 수정 필요
+    private static final long VAILDMILI_SECOND = 1000L * 60 * 60; //1시간
+    @Value("${jwt.secret.key}")
+    private final String SECRET_KEY;
 
     private final UserDetailsService userDetailsService;
 
@@ -35,7 +37,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + VAILD_MILISECOND))
+                .setExpiration(new Date(now.getTime() + VAILDMILI_SECOND))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }

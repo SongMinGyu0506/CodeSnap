@@ -24,7 +24,13 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+        Set<GrantedAuthority> authoritySet = Collections.unmodifiableSet(sortAuthorities(authorities));
+        if(!authoritySet.isEmpty()) {
+            this.authorities = authoritySet;
+            return this.authorities;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
