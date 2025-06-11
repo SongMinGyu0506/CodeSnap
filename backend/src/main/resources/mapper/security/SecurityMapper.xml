@@ -3,14 +3,31 @@
         PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bi_side.CodeSnap.config.security.mapper.SecurityMapper">
+    <insert id="saveLog" parameterType="map">
+        INSERT INTO login_logs (
+            email
+            , status
+            , login_at
+            , client_ip
+            , user_agent
+        ) VALUES (
+            #{email}
+            , 'LOGIN'
+            , CURRENT_TIMESTAMP
+            , #{clientIp}
+            , #{userAgent}
+        )
+    </insert>
     <select id="getUserInfo" parameterType="string" resultType="userDetails">
         SELECT
-            user_id as username,
-            pwd as password
+            u.user_id as username,
+            u.pwd as password,
+            ur.role_id as role
         FROM
             users u
+        INNER JOIN user_roles ur ON u.user_id = ur.user_id
         WHERE 1=1
-            AND user_id = #{username}
+            AND u.user_id = #{username}
     </select>
 
     <select id="loadRoles" resultType="map">
@@ -42,5 +59,8 @@
     <select id="getRolesLastUpdate" resultType="java.util.Date">
         SELECT MAX(updated_at)
         FROM menu
+    </select>
+    <select id="getUserRole" resultType="java.lang.String" parameterType="string">
+        SELECT role_id FROM user_roles WHERE user_id = #{email}
     </select>
 </mapper>

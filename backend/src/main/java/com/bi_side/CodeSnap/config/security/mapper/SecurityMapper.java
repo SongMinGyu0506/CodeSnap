@@ -12,4 +12,6 @@ public interface SecurityMapper {
     List<Map<String,String>> loadRoles();
     Date getRolesLastUpdate();
     CustomUserDetails getUserInfo(String username);
+    int saveLog(Map<String,String> log);
+    String getUserRole(String email);
 }

@@ -30,6 +30,7 @@ public class WebSecurityConfig {
 
     private final UserDetailsService userDetailService;
     private final JwtProvider jwtProvider;
+    private final SecurityMapper securityMapper;
     //private final DynamicAuthorizationManager dynamicAuthorizationManager;
 
     @Bean
@@ -38,7 +39,7 @@ public class WebSecurityConfig {
     }
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider(userDetailService,passwordEncoder());
+        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider(userDetailService,passwordEncoder(),securityMapper);
         return new ProviderManager(provider);
     }
     @Bean
