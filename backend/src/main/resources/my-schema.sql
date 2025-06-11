@@ -43,3 +43,23 @@ CREATE TABLE menu_roles (
     menu_id BIGINT NOT NULL,
     PRIMARY KEY (role_id, menu_id)
 );
+
+CREATE TABLE login_logs (
+    email VARCHAR(255) NOT NULL,
+    status CHAR(9) NOT NULL,
+    login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    client_ip VARCHAR(50),
+    user_agent VARCHAR(255),
+    PRIMARY KEY (login_at)
+);
+
+CREATE TABLE `api_access_logs`
+(
+  `access_at`     TIMESTAMP    NOT NULL,
+  `url`           VARCHAR(255) NOT NULL,
+  `email`         VARCHAR(255) NULL,
+  `http_status`   CHAR(3)      NOT NULL,
+  `request_json`  TEXT         NULL,
+  `response_json` TEXT         NULL,
+  PRIMARY KEY (`access_at`, `url`)
+)
