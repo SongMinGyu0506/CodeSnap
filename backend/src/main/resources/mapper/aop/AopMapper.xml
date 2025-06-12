@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bi_side.CodeSnap.config.aop.impl.AopMapper">
+    <insert id="insertApiLog" parameterType="map">
+        INSERT INTO api_access_logs (
+            access_at
+            , url
+            , email
+            , http_status
+            , http_method
+            , client_ip
+            , request_json
+            , response_json
+        ) VALUES (
+            CURRENT_TIMESTAMP
+            , #{url}
+            , #{email}
+            , #{httpStatus}
+            , #{httpMethod}
+            , #{clientIp}
+            , #{requestJson}
+            , #{responseJson}
+        )
+    </insert>
+</mapper>

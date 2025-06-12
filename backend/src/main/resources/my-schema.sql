@@ -58,6 +58,8 @@ CREATE TABLE `api_access_logs`
   `access_at`     TIMESTAMP    NOT NULL,
   `url`           VARCHAR(255) NOT NULL,
   `email`         VARCHAR(255) NULL,
+  `http_method`   VARCHAR(50)  NOT NULL,
+  `client_ip`     VARCHAR(50)  NOT NULL,
   `http_status`   CHAR(3)      NOT NULL,
   `request_json`  TEXT         NULL,
   `response_json` TEXT         NULL,
